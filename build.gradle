@@ -1,0 +1,80 @@
+plugins {
+	id 'org.springframework.boot' version '2.5.9'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+	id 'jacoco'
+	id 'com.diffplug.spotless' version '6.1.0'
+}
+
+group = 'com.weather'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+sourceSets {
+  componentTest{
+    java.srcDirs project.file ("src/componenttest/java")
+    compileClasspath += main.output + test.output
+    runtimeClasspath += main.output + test.output
+    //resources.srcDirs project.file("src/componenttest/resources")
+  }
+}
+
+configurations {
+  compileOnly {
+    extendsFrom annotationProcessor
+  }
+  componentTestImplementation.extendsFrom testImplementation
+  componentTestRuntime.extendsFrom testRuntime
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation "com.google.code.gson:gson:2.8.5"
+	compileOnly 'org.projectlombok:lombok'
+	compileOnly 'org.mockito:mockito-core:4.4.0'
+	compileOnly 'org.mockito:mockito-inline:4.4.0'
+        annotationProcessor 'org.projectlombok:lombok'
+
+	implementation "io.springfox:springfox-swagger2:3.0.0"
+        implementation "io.springfox:springfox-swagger-ui:2.9.2"
+        implementation 'org.springframework.boot:spring-boot-starter-web'
+        testImplementation('org.springframework.boot:spring-boot-starter-test')
+	testImplementation 'junit:junit:4.12'
+        testImplementation 'io.cucumber:cucumber-java:6.10.4'
+        testImplementation 'io.cucumber:cucumber-junit:6.10.4'
+        implementation group: 'io.cucumber', name: 'cucumber-spring', version: '6.10.4'
+        testImplementation 'com.epam.reportportal:agent-java-cucumber6:5.0.2'
+
+}
+
+test {
+    useJUnit ()
+    //testLogging.showStandardStreams = true
+}
+
+spotless {
+   java {
+      target fileTree('.') {
+            include '**/*.java'
+            exclude '**/build/**', '**/build-*/**'
+      }
+      toggleOffOn()
+      googleJavaFormat()
+      removeUnusedImports()
+      trimTrailingWhitespace()
+      endWithNewline()
+   }
+}
+
+task('componentTest', type: Test){
+  def cucumberTags = "@ComponentTest"
+  systemProperties["cucumber.filter.tags"] = cucumberTags
+  systemProperties["cucumber.plugin"] = "pretty, json:target/ComponentTest/cucumber.json,com.epam.reportportal.cucumber.ScenarioReporter"
+  testClassesDirs = project.sourceSets.componentTest.output.classesDirs
+  classpath =  project.sourceSets.componentTest.runtimeClasspath
+  testLogging.showStandardStreams = true
+}
+
