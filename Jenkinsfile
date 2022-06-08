@@ -9,9 +9,9 @@ pipeline{
 				sh 'gradlew clean build'
 			}
 		}
-		stage('Component Test') {
+		stage('Cucumber Test') {
 			steps {
-				sh 'gradlew componentTest'
+				sh 'gradlew cucumberTest'
 			}
 		}
 		stage('Generate Docker Image') {

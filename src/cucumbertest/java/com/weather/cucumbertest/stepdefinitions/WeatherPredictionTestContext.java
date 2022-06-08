@@ -1,4 +1,4 @@
-package com.weather.componenttest.stepdefinitions;
+package com.weather.cucumbertest.stepdefinitions;
 
 import com.weather.WeatherPredictionApplication;
 import com.weather.configuration.WeatherInputConfiguration;

@@ -11,8 +11,8 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 sourceSets {
-  componentTest{
-    java.srcDirs project.file ("src/componenttest/java")
+  cucumberTest{
+    java.srcDirs project.file ("src/cucumbertest/java")
     compileClasspath += main.output + test.output
     runtimeClasspath += main.output + test.output
   }
@@ -22,8 +22,8 @@ configurations {
   compileOnly {
     extendsFrom annotationProcessor
   }
-  componentTestImplementation.extendsFrom testImplementation
-  componentTestRuntime.extendsFrom testRuntime
+  cucumberTestImplementation.extendsFrom testImplementation
+  cucumberTestRuntime.extendsFrom testRuntime
 }
 
 repositories {
@@ -68,12 +68,12 @@ spotless {
    }
 }
 
-task('componentTest', type: Test){
-  def cucumberTags = "@ComponentTest"
+task('cucumberTest', type: Test){
+  def cucumberTags = "@CucumberTest"
   systemProperties["cucumber.filter.tags"] = cucumberTags
-  systemProperties["cucumber.plugin"] = "pretty, json:target/ComponentTest/cucumber.json,com.epam.reportportal.cucumber.ScenarioReporter"
-  testClassesDirs = project.sourceSets.componentTest.output.classesDirs
-  classpath =  project.sourceSets.componentTest.runtimeClasspath
+  systemProperties["cucumber.plugin"] = "pretty, json:target/CucumberTest/cucumber.json,com.epam.reportportal.cucumber.ScenarioReporter"
+  testClassesDirs = project.sourceSets.cucumberTest.output.classesDirs
+  classpath =  project.sourceSets.cucumberTest.runtimeClasspath
   testLogging.showStandardStreams = true
 }
 

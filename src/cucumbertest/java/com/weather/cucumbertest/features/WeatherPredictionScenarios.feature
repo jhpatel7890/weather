@@ -1,4 +1,4 @@
-@ComponentTest
+@CucumberTest
 Feature: Weather Prediction API scenarios
 
   @Scenario-0
