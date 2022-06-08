@@ -1,10 +1,10 @@
-package com.weather.configuration;
+package com.weather.util;
 
 import java.time.LocalDate;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ClockConfiguration {
+public class DateUtil {
 
   public LocalDate getCurrentLocalDate() {
     return LocalDate.now();
