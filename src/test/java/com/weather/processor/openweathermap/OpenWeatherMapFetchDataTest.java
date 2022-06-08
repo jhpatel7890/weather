@@ -1,8 +1,6 @@
 package com.weather.processor.openweathermap;
 
 import com.weather.configuration.WeatherInputConfiguration;
-import com.weather.exception.CityNotFoundException;
-import com.weather.exception.InternalServerErrorException;
 import com.weather.processor.openweathermap.input.WeatherForcast;
 import java.io.File;
 import java.nio.file.Files;
@@ -23,7 +21,6 @@ public class OpenWeatherMapFetchDataTest {
   @InjectMocks OpenWeatherMapFetchData openWeatherMapFetchData;
   @Mock WeatherInputConfiguration weatherInputConfiguration;
   @Mock OpenWeatherMapCallApi openWeatherMapCallApi;
-  @Mock OpenWeatherMapExceptionHandler openWeatherMapExceptionHandler;
 
   @Test
   public void predictWeatherTest() throws Exception {
@@ -44,7 +41,7 @@ public class OpenWeatherMapFetchDataTest {
     Assert.assertNotNull(result);
   }
 
-  @Test(expected = CityNotFoundException.class)
+  @Test(expected = HttpClientErrorException.class)
   public void predictWeatherCityNotFoundExceptionTest() throws Exception {
     String city = "dummy";
     Mockito.doReturn("http://api.openweathermap.org/data/2.5/forecast")
@@ -52,9 +49,6 @@ public class OpenWeatherMapFetchDataTest {
         .getInputWeatherDataUrl();
     Mockito.doReturn("metric").when(weatherInputConfiguration).getInputWeatherDataUnits();
     Mockito.doReturn("SampleAppId").when(weatherInputConfiguration).getOpenWeatherAppId();
-    Mockito.doThrow(new CityNotFoundException(""))
-        .when(openWeatherMapExceptionHandler)
-        .handleExceptions(Mockito.any(HttpClientErrorException.class), Mockito.eq(city));
     Mockito.doThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND))
         .when(openWeatherMapCallApi)
         .getOpenWeatherMapRestData(
@@ -62,7 +56,7 @@ public class OpenWeatherMapFetchDataTest {
     WeatherForcast result = openWeatherMapFetchData.fetchWeatherForcastData(city);
   }
 
-  @Test(expected = InternalServerErrorException.class)
+  @Test(expected = HttpClientErrorException.class)
   public void predictWeatherUnauthorisedExceptionTest() throws Exception {
     String city = "Visnagar";
     Mockito.doReturn("http://api.openweathermap.org/data/2.5/forecast")
@@ -70,9 +64,6 @@ public class OpenWeatherMapFetchDataTest {
         .getInputWeatherDataUrl();
     Mockito.doReturn("metric").when(weatherInputConfiguration).getInputWeatherDataUnits();
     Mockito.doReturn("InvalidAppId").when(weatherInputConfiguration).getOpenWeatherAppId();
-    Mockito.doThrow(new InternalServerErrorException(""))
-        .when(openWeatherMapExceptionHandler)
-        .handleExceptions(Mockito.any(HttpClientErrorException.class), Mockito.eq(city));
     Mockito.doThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED))
         .when(openWeatherMapCallApi)
         .getOpenWeatherMapRestData(
@@ -80,7 +71,7 @@ public class OpenWeatherMapFetchDataTest {
     WeatherForcast result = openWeatherMapFetchData.fetchWeatherForcastData(city);
   }
 
-  @Test(expected = InternalServerErrorException.class)
+  @Test(expected = ResourceAccessException.class)
   public void predictWeatherResourceAccessExceptionTest() throws Exception {
     String city = "Visnagar";
     Mockito.doReturn("http://api.openweathermap.org/data/2.5/forecast")
@@ -88,9 +79,6 @@ public class OpenWeatherMapFetchDataTest {
         .getInputWeatherDataUrl();
     Mockito.doReturn("metric").when(weatherInputConfiguration).getInputWeatherDataUnits();
     Mockito.doReturn("SampleAppId").when(weatherInputConfiguration).getOpenWeatherAppId();
-    Mockito.doThrow(new InternalServerErrorException(""))
-        .when(openWeatherMapExceptionHandler)
-        .handleExceptions(Mockito.any(ResourceAccessException.class), Mockito.eq(city));
     Mockito.doThrow(new ResourceAccessException(""))
         .when(openWeatherMapCallApi)
         .getOpenWeatherMapRestData(

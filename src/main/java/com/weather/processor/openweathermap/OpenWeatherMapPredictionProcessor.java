@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 public class OpenWeatherMapPredictionProcessor implements WeatherPredictionProcessor {
   @Autowired OpenWeatherMapFetchData openWeatherMapFetchData;
   @Autowired OpenWeatherMapProcessData openWeatherMapProcessData;
+  @Autowired OpenWeatherMapExceptionHandler openWeatherMapExceptionHandler;
   private static final Logger logger =
       LogManager.getLogger(OpenWeatherMapPredictionProcessor.class);
 
@@ -26,8 +27,13 @@ public class OpenWeatherMapPredictionProcessor implements WeatherPredictionProce
    */
   @Override
   public WeatherPrediction predictWeather(String city) throws Exception {
-    WeatherForcast weatherForcast = openWeatherMapFetchData.fetchWeatherForcastData(city);
-    WeatherPrediction weatherPrediction = openWeatherMapProcessData.processData(weatherForcast);
+    WeatherPrediction weatherPrediction = null;
+    try {
+      WeatherForcast weatherForcast = openWeatherMapFetchData.fetchWeatherForcastData(city);
+      weatherPrediction = openWeatherMapProcessData.processData(weatherForcast);
+    } catch (Exception exception) {
+      openWeatherMapExceptionHandler.handleExceptions(exception, city);
+    }
     return weatherPrediction;
   }
 }

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 public class OpenWeatherMapFetchData {
   @Autowired OpenWeatherMapCallApi openWeatherMapCallApi;
   @Autowired WeatherInputConfiguration weatherInputConfiguration;
-  @Autowired OpenWeatherMapExceptionHandler openWeatherMapExceptionHandler;
 
   private static final Logger logger = LogManager.getLogger(OpenWeatherMapFetchData.class);
 
@@ -26,19 +25,14 @@ public class OpenWeatherMapFetchData {
    * @return weatherForcast - WeatherForcast
    * @throws Exception
    */
-  public WeatherForcast fetchWeatherForcastData(String city) throws Exception {
-    WeatherForcast weatherForcast = null;
-    try {
-      String openWeatherMapUrl = buildOpenWeatherMapUrl(city);
-      logger.info("-- fetchWeatherForcastData openWeatherMapUrl {}", openWeatherMapUrl);
-      String result = openWeatherMapCallApi.getOpenWeatherMapRestData(openWeatherMapUrl);
-      // Convert string weather data into WeatherForcast object using Gson
-      GsonBuilder gsonBuilder = new GsonBuilder();
-      Gson gson = gsonBuilder.create();
-      weatherForcast = gson.fromJson(result, WeatherForcast.class);
-    } catch (Exception exception) {
-      openWeatherMapExceptionHandler.handleExceptions(exception, city);
-    }
+  public WeatherForcast fetchWeatherForcastData(String city) {
+    String openWeatherMapUrl = buildOpenWeatherMapUrl(city);
+    logger.info("-- fetchWeatherForcastData openWeatherMapUrl {}", openWeatherMapUrl);
+    String result = openWeatherMapCallApi.getOpenWeatherMapRestData(openWeatherMapUrl);
+    // Convert string weather data into WeatherForcast object using Gson
+    GsonBuilder gsonBuilder = new GsonBuilder();
+    Gson gson = gsonBuilder.create();
+    WeatherForcast weatherForcast = gson.fromJson(result, WeatherForcast.class);
     return weatherForcast;
   }
 

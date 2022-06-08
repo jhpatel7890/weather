@@ -11,12 +11,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OpenWeatherMapPredictionProcessorTest {
   @InjectMocks OpenWeatherMapPredictionProcessor openWeatherMapPredictionProcessor;
   @Mock OpenWeatherMapFetchData openWeatherMapFetchData;
   @Mock OpenWeatherMapProcessData openWeatherMapProcessData;
+  @Mock OpenWeatherMapExceptionHandler openWeatherMapExceptionHandler;
   @Mock WeatherPrediction weatherPrediction;
   @Mock WeatherForcast weatherForcast;
 
@@ -32,18 +35,26 @@ public class OpenWeatherMapPredictionProcessorTest {
   @Test(expected = CityNotFoundException.class)
   public void getWeatherPredictionTestCityNotFound() throws Exception {
     String city = "dummy";
-    Mockito.doThrow(new CityNotFoundException("City 'dummy' not found"))
+    Mockito.doThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND, "City 'dummy' not found"))
         .when(openWeatherMapFetchData)
         .fetchWeatherForcastData(city);
+    Mockito.doThrow(new CityNotFoundException("City dummy not found"))
+        .when(openWeatherMapExceptionHandler)
+        .handleExceptions(Mockito.any(Exception.class), Mockito.any(String.class));
+
     openWeatherMapPredictionProcessor.predictWeather(city);
   }
 
   @Test(expected = InternalServerErrorException.class)
   public void getWeatherPredictionTestInternalServerException() throws Exception {
-    String city = "dummy";
-    Mockito.doThrow(new InternalServerErrorException("Invalid openweathermap api id"))
+    String city = "Visnagar";
+    Mockito.doThrow(
+            new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Invalid openweathermap api id"))
         .when(openWeatherMapFetchData)
         .fetchWeatherForcastData(city);
+    Mockito.doThrow(new InternalServerErrorException("Invalid openweathermap api id"))
+        .when(openWeatherMapExceptionHandler)
+        .handleExceptions(Mockito.any(Exception.class), Mockito.any(String.class));
     openWeatherMapPredictionProcessor.predictWeather(city);
   }
 }
