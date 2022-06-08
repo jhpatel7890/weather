@@ -46,13 +46,14 @@ public class WeatherPredictionController {
         @ApiResponse(code = 500, message = "Internal server error")
       })
   public ResponseEntity<String> predictWeatherForNext3Days(
-      @RequestParam(value = "city", defaultValue = "london") String city) throws Exception {
-    logger.info("-- predictWeatherForNext3Days city {}", city);
-    WeatherPrediction weatherPredictionOutput = weatherPredictionService.getWeatherPrediction(city);
+      @RequestParam(value = "city", defaultValue = "london") String city,
+      @RequestParam(value = "offlineMode", defaultValue = "n") String offlineMode)
+      throws Exception {
+    WeatherPrediction weatherPredictionOutput =
+        weatherPredictionService.getWeatherPrediction(city, offlineMode);
     GsonBuilder gsonBuilder = new GsonBuilder();
     Gson gson = gsonBuilder.create();
     String output = gson.toJson(weatherPredictionOutput);
-    logger.info("-- predictWeatherForNext3Days output {}", output);
     return new ResponseEntity<String>(output, getHttpStatusCode(weatherPredictionOutput));
   }
 

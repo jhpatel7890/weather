@@ -6,7 +6,7 @@ import org.springframework.web.client.RestTemplate;
 
 /** Configuration class to create bean of RestTemplate */
 @Configuration
-public class RestTemplateConfiguration {
+public class RestTemplateBeanConfiguration {
   @Bean
   public RestTemplate restTemplate() {
     return new RestTemplate();

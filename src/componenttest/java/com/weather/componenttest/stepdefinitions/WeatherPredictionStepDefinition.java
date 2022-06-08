@@ -65,9 +65,7 @@ public class WeatherPredictionStepDefinition extends WeatherPredictionTestContex
     if (dataMap.containsKey("InputWeatherDataCollectionDate")) {
       LocalDate inputWeatherDataCollectionDate =
           LocalDate.parse(dataMap.get("InputWeatherDataCollectionDate"));
-      Mockito.doReturn(inputWeatherDataCollectionDate)
-          .when(clockConfiguration)
-          .getCurrentLocalDate();
+      Mockito.doReturn(inputWeatherDataCollectionDate).when(dateUtil).getCurrentLocalDate();
     }
   }
 
@@ -102,17 +100,18 @@ public class WeatherPredictionStepDefinition extends WeatherPredictionTestContex
   }
 
   @Given("^Mock the internal server error exception weather data response of (.*) city$")
-  public void mockInternalServerExceptionFailureOpenWeatherMapResponse(String city) throws Exception {
+  public void mockInternalServerExceptionFailureOpenWeatherMapResponse(String city)
+      throws Exception {
     Mockito.doThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED))
-            .when(openWeatherMapCallApi)
-            .getOpenWeatherMapRestData(
-                    (String) dataStorage.get("InputWeatherDataUrl")
-                            + "?q="
-                            + city
-                            + "&mode=json&units="
-                            + (String) dataStorage.get("InputWeatherDataUnits")
-                            + "&appid="
-                            + (String) dataStorage.get("OpenWeatherMapAppId"));
+        .when(openWeatherMapCallApi)
+        .getOpenWeatherMapRestData(
+            (String) dataStorage.get("InputWeatherDataUrl")
+                + "?q="
+                + city
+                + "&mode=json&units="
+                + (String) dataStorage.get("InputWeatherDataUnits")
+                + "&appid="
+                + (String) dataStorage.get("OpenWeatherMapAppId"));
   }
 
   @When("^Call the weather prediction api for city (.*)$")
@@ -185,13 +184,14 @@ public class WeatherPredictionStepDefinition extends WeatherPredictionTestContex
     }
   }
 
-  @When("^Call failed weather prediction api for city (.*) which raises internal server error exception$")
+  @When(
+      "^Call failed weather prediction api for city (.*) which raises internal server error exception$")
   public void callWeatherPredictionApiWithInternalServerErrorException(String city) {
     try {
       String result =
-              restTemplate.getForObject(
-                      "http://localhost:8080/api/weatherPrediction/predictWeatherForNext3Days?city=" + city,
-                      String.class);
+          restTemplate.getForObject(
+              "http://localhost:8080/api/weatherPrediction/predictWeatherForNext3Days?city=" + city,
+              String.class);
     } catch (HttpServerErrorException exception) {
       Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatusCode());
     }

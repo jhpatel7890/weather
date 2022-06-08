@@ -25,4 +25,10 @@ public class WeatherInputConfiguration {
 
   @Value("${input.weather.data.threshold.max.wind.speed}")
   private Integer inputWeatherDataThresholdMaxWindSpeed;
+
+  @Value("${weather.data.offline.supported.citys}")
+  private String weatherDataOfflineSupportedCitys;
+
+  @Value("${weather.data.offline.frequency.value}")
+  private String weatherDataOfflineFrequencyValue;
 }

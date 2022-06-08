@@ -5,6 +5,7 @@ import com.weather.exception.CityNotFoundException;
 import com.weather.exception.InternalServerErrorException;
 import com.weather.pojo.WeatherPrediction;
 import com.weather.processor.openweathermap.OpenWeatherMapPredictionProcessor;
+import com.weather.util.WeatherPredictionCacheUtil;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,9 +20,10 @@ public class WeatherPredictionServiceImplTest {
   @Mock WeatherPredictionProcessorFactory weatherPredictionProcessorFactory;
   @Mock WeatherInputConfiguration weatherInputConfiguration;
   @Mock OpenWeatherMapPredictionProcessor openWeatherMapPredictionProcessor;
+  @Mock WeatherPredictionCacheUtil weatherPredictionCacheUtil;
 
   @Test
-  public void getWeatherPredictionTest() throws Exception {
+  public void getWeatherPredictionOfflineModeDisabledTest() throws Exception {
     String city = "Visnagar";
     Mockito.doReturn("openweathermap").when(weatherInputConfiguration).getInputWeatherDataSource();
     Mockito.doReturn(openWeatherMapPredictionProcessor)
@@ -31,7 +33,33 @@ public class WeatherPredictionServiceImplTest {
     Mockito.doReturn(weatherPrediction)
         .when(openWeatherMapPredictionProcessor)
         .predictWeather(city);
-    WeatherPrediction result = weatherPredictionServiceImpl.getWeatherPrediction(city);
+    WeatherPrediction result = weatherPredictionServiceImpl.getWeatherPrediction(city, "n");
+    Assert.assertNotNull(result);
+    Assert.assertEquals("200", result.getCode());
+    Assert.assertEquals("Success", result.getMessage());
+  }
+
+  @Test
+  public void getWeatherPredictionOfflineModeYTest() throws Exception {
+    String city = "Visnagar";
+    WeatherPrediction weatherPrediction = new WeatherPrediction();
+    Mockito.doReturn(weatherPrediction)
+        .when(weatherPredictionCacheUtil)
+        .getWeatherPredictionCacheData(city);
+    WeatherPrediction result = weatherPredictionServiceImpl.getWeatherPrediction(city, "y");
+    Assert.assertNotNull(result);
+    Assert.assertEquals("200", result.getCode());
+    Assert.assertEquals("Success", result.getMessage());
+  }
+
+  @Test
+  public void getWeatherPredictionOfflineModeYesTest() throws Exception {
+    String city = "Visnagar";
+    WeatherPrediction weatherPrediction = new WeatherPrediction();
+    Mockito.doReturn(weatherPrediction)
+        .when(weatherPredictionCacheUtil)
+        .getWeatherPredictionCacheData(city);
+    WeatherPrediction result = weatherPredictionServiceImpl.getWeatherPrediction(city, "yes");
     Assert.assertNotNull(result);
     Assert.assertEquals("200", result.getCode());
     Assert.assertEquals("Success", result.getMessage());
@@ -48,7 +76,7 @@ public class WeatherPredictionServiceImplTest {
     Mockito.doThrow(new CityNotFoundException("City '" + city + "' not found"))
         .when(openWeatherMapPredictionProcessor)
         .predictWeather(city);
-    WeatherPrediction result = weatherPredictionServiceImpl.getWeatherPrediction(city);
+    WeatherPrediction result = weatherPredictionServiceImpl.getWeatherPrediction(city, "n");
     Assert.assertNotNull(result);
     Assert.assertEquals("404", result.getCode());
     Assert.assertEquals("City '" + city + "' not found", result.getMessage());
@@ -65,7 +93,7 @@ public class WeatherPredictionServiceImplTest {
     Mockito.doThrow(new InternalServerErrorException("Invalid openweathermap Api Id"))
         .when(openWeatherMapPredictionProcessor)
         .predictWeather(city);
-    WeatherPrediction result = weatherPredictionServiceImpl.getWeatherPrediction(city);
+    WeatherPrediction result = weatherPredictionServiceImpl.getWeatherPrediction(city, "n");
     Assert.assertNotNull(result);
     Assert.assertEquals("500", result.getCode());
     Assert.assertEquals("Invalid openweathermap Api Id", result.getMessage());
@@ -82,7 +110,7 @@ public class WeatherPredictionServiceImplTest {
     Mockito.doThrow(new Exception("Unhandled exception"))
         .when(openWeatherMapPredictionProcessor)
         .predictWeather(city);
-    WeatherPrediction result = weatherPredictionServiceImpl.getWeatherPrediction(city);
+    WeatherPrediction result = weatherPredictionServiceImpl.getWeatherPrediction(city, "n");
     Assert.assertNotNull(result);
     Assert.assertEquals("500", result.getCode());
     Assert.assertEquals("Unhandled exception", result.getMessage());

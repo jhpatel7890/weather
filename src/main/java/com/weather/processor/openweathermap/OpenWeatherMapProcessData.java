@@ -1,6 +1,5 @@
 package com.weather.processor.openweathermap;
 
-import com.weather.configuration.ClockConfiguration;
 import com.weather.configuration.WeatherInputConfiguration;
 import com.weather.configuration.WeatherPredictionConfiguration;
 import com.weather.pojo.WeatherPrediction;
@@ -9,6 +8,7 @@ import com.weather.processor.openweathermap.input.Main;
 import com.weather.processor.openweathermap.input.WeatherData;
 import com.weather.processor.openweathermap.input.WeatherForcast;
 import com.weather.processor.openweathermap.input.Wind;
+import com.weather.util.DateUtil;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 public class OpenWeatherMapProcessData {
   @Autowired WeatherInputConfiguration weatherInputConfiguration;
   @Autowired WeatherPredictionConfiguration weatherPredictionConfiguration;
-  @Autowired ClockConfiguration clockConfiguration;
+  @Autowired DateUtil dateUtil;
   private static final Logger logger = LogManager.getLogger(OpenWeatherMapProcessData.class);
 
   /**
@@ -122,7 +122,7 @@ public class OpenWeatherMapProcessData {
    * @return boolean
    */
   private boolean isDateWithinPredictionDaysLimit(String dateStr) {
-    LocalDate currentDate = clockConfiguration.getCurrentLocalDate();
+    LocalDate currentDate = dateUtil.getCurrentLocalDate();
     LocalDate weatherDataDate = LocalDate.parse(dateStr);
     long days = ChronoUnit.DAYS.between(currentDate, weatherDataDate);
     if (days < weatherPredictionConfiguration.getWeatherPredictionDays()) {

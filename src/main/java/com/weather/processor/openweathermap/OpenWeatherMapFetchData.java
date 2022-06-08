@@ -27,7 +27,6 @@ public class OpenWeatherMapFetchData {
    */
   public WeatherForcast fetchWeatherForcastData(String city) {
     String openWeatherMapUrl = buildOpenWeatherMapUrl(city);
-    logger.info("-- fetchWeatherForcastData openWeatherMapUrl {}", openWeatherMapUrl);
     String result = openWeatherMapCallApi.getOpenWeatherMapRestData(openWeatherMapUrl);
     // Convert string weather data into WeatherForcast object using Gson
     GsonBuilder gsonBuilder = new GsonBuilder();
@@ -50,7 +49,6 @@ public class OpenWeatherMapFetchData {
             .append("&units=" + weatherInputConfiguration.getInputWeatherDataUnits())
             .append("&appid=" + weatherInputConfiguration.getOpenWeatherAppId());
     String url = urlBuilder.toString();
-    logger.info("-- buildOpenWeatherMapUrl url {}", url);
     return url;
   }
 }

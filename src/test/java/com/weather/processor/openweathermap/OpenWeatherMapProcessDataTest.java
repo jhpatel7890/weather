@@ -2,12 +2,12 @@ package com.weather.processor.openweathermap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.weather.configuration.ClockConfiguration;
 import com.weather.configuration.WeatherInputConfiguration;
 import com.weather.configuration.WeatherPredictionConfiguration;
 import com.weather.pojo.WeatherPrediction;
 import com.weather.pojo.WeatherPredictionPerDay;
 import com.weather.processor.openweathermap.input.WeatherForcast;
+import com.weather.util.DateUtil;
 import java.io.File;
 import java.nio.file.Files;
 import java.time.LocalDate;
@@ -27,7 +27,7 @@ public class OpenWeatherMapProcessDataTest {
   @Mock WeatherInputConfiguration weatherInputConfiguration;
   @Mock WeatherPredictionConfiguration weatherPredictionConfiguration;
   @Mock OpenWeatherMapExceptionHandler openWeatherMapExceptionHandler;
-  @Mock ClockConfiguration clockConfiguration;
+  @Mock DateUtil dateUtil;
   private static final LocalDate LOCAL_DATE = LocalDate.of(2022, 06, 05);
 
   @Test
@@ -37,7 +37,7 @@ public class OpenWeatherMapProcessDataTest {
     Mockito.doReturn((Double) 40.0)
         .when(weatherInputConfiguration)
         .getInputWeatherDataThresholdMaxTemp();
-    Mockito.doReturn(LOCAL_DATE).when(clockConfiguration).getCurrentLocalDate();
+    Mockito.doReturn(LOCAL_DATE).when(dateUtil).getCurrentLocalDate();
     Mockito.doReturn(4).when(weatherInputConfiguration).getInputWeatherDataThresholdMaxWindSpeed();
     Mockito.doReturn(3).when(weatherPredictionConfiguration).getWeatherPredictionDays();
     Mockito.doReturn("Carry umbrella")
@@ -81,7 +81,7 @@ public class OpenWeatherMapProcessDataTest {
   @Test
   public void predictWeatherVisnagarTest() throws Exception {
     String city = "Visnagar";
-    Mockito.doReturn(LOCAL_DATE).when(clockConfiguration).getCurrentLocalDate();
+    Mockito.doReturn(LOCAL_DATE).when(dateUtil).getCurrentLocalDate();
     File resource = new ClassPathResource("testdata/openWeatherMapVisnagarData.json").getFile();
     Mockito.doReturn((Double) 40.0)
         .when(weatherInputConfiguration)
@@ -136,7 +136,7 @@ public class OpenWeatherMapProcessDataTest {
   @Test
   public void predictWeatherVisnagarFor4DaysTest() throws Exception {
     String city = "Visnagar";
-    Mockito.doReturn(LOCAL_DATE).when(clockConfiguration).getCurrentLocalDate();
+    Mockito.doReturn(LOCAL_DATE).when(dateUtil).getCurrentLocalDate();
     File resource = new ClassPathResource("testdata/openWeatherMapVisnagarData.json").getFile();
     Mockito.doReturn((Double) 40.0)
         .when(weatherInputConfiguration)
