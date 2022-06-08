@@ -44,8 +44,7 @@ dependencies {
 	testImplementation 'junit:junit:4.12'
         testImplementation 'io.cucumber:cucumber-java:6.10.4'
         testImplementation 'io.cucumber:cucumber-junit:6.10.4'
-        implementation group: 'io.cucumber', name: 'cucumber-spring', version: '6.10.4'
-        testImplementation 'com.epam.reportportal:agent-java-cucumber6:5.0.2'
+	testImplementation 'io.cucumber:cucumber-spring:6.10.4'
 
 }
 
@@ -71,7 +70,7 @@ spotless {
 task('cucumberTest', type: Test){
   def cucumberTags = "@CucumberTest"
   systemProperties["cucumber.filter.tags"] = cucumberTags
-  systemProperties["cucumber.plugin"] = "pretty, json:target/CucumberTest/cucumber.json,com.epam.reportportal.cucumber.ScenarioReporter"
+  systemProperties["cucumber.plugin"] = "pretty, json:target/CucumberTest/cucumber.json"
   testClassesDirs = project.sourceSets.cucumberTest.output.classesDirs
   classpath =  project.sourceSets.cucumberTest.runtimeClasspath
   testLogging.showStandardStreams = true
