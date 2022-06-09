@@ -9,5 +9,6 @@ import org.junit.runner.RunWith;
     features = {"src/cucumbertest/resources"},
     glue = "com.weather.cucumbertest.stepdefinitions",
     tags = "@CucumberTest",
-    plugin = {"json:target/cucumber.json", "html:target/cucumber-reports"})
+    plugin = {"json:target/cucumber.json", "html:target/cucumber-reports"},
+    publish = true)
 public class RunCucumberTest {}
